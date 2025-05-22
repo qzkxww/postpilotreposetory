@@ -1,16 +1,38 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { Link } from 'expo-router';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { Link, router } from 'expo-router';
 import { useTheme } from '@/context/ThemeContext';
 import { Mail, Lock } from 'lucide-react-native';
+import { supabase } from '@/utils/supabase';
 
 export default function LoginScreen() {
   const { isDarkMode } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    // TODO: Implement login logic
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      // Navigate to the main app
+      router.replace('/(tabs)');
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,6 +80,7 @@ export default function LoginScreen() {
             onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
+            editable={!loading}
           />
         </View>
 
@@ -80,6 +103,7 @@ export default function LoginScreen() {
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            editable={!loading}
           />
         </View>
 
@@ -95,12 +119,14 @@ export default function LoginScreen() {
         <TouchableOpacity 
           style={[
             styles.button,
-            { opacity: (!email || !password) ? 0.5 : 1 }
+            { opacity: (!email || !password || loading) ? 0.5 : 1 }
           ]}
           onPress={handleLogin}
-          disabled={!email || !password}
+          disabled={!email || !password || loading}
         >
-          <Text style={styles.buttonText}>Sign In</Text>
+          <Text style={styles.buttonText}>
+            {loading ? 'Signing In...' : 'Sign In'}
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.signupContainer}>

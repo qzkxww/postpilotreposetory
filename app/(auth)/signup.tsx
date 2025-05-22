@@ -1,17 +1,59 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { Link } from 'expo-router';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { Link, router } from 'expo-router';
 import { useTheme } from '@/context/ThemeContext';
 import { Mail, Lock, User } from 'lucide-react-native';
+import { supabase } from '@/utils/supabase';
 
 export default function SignupScreen() {
   const { isDarkMode } = useTheme();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSignup = () => {
-    // TODO: Implement signup logic
+  const handleSignup = async () => {
+    if (!email || !password || !fullName) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Sign up the user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (authError) throw authError;
+
+      if (authData.user) {
+        // Insert the user's profile data
+        const { error: profileError } = await supabase
+          .from('users')
+          .insert([
+            {
+              id: authData.user.id,
+              email: email,
+              full_name: fullName,
+            }
+          ]);
+
+        if (profileError) throw profileError;
+
+        Alert.alert(
+          'Success', 
+          'Account created successfully!',
+          [{ text: 'OK', onPress: () => router.push('/login') }]
+        );
+      }
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -57,6 +99,7 @@ export default function SignupScreen() {
             placeholderTextColor={isDarkMode ? '#888888' : '#999999'}
             value={fullName}
             onChangeText={setFullName}
+            editable={!loading}
           />
         </View>
 
@@ -80,6 +123,7 @@ export default function SignupScreen() {
             onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
+            editable={!loading}
           />
         </View>
 
@@ -102,18 +146,21 @@ export default function SignupScreen() {
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            editable={!loading}
           />
         </View>
 
         <TouchableOpacity 
           style={[
             styles.button,
-            { opacity: (!fullName || !email || !password) ? 0.5 : 1 }
+            { opacity: (!fullName || !email || !password || loading) ? 0.5 : 1 }
           ]}
           onPress={handleSignup}
-          disabled={!fullName || !email || !password}
+          disabled={!fullName || !email || !password || loading}
         >
-          <Text style={styles.buttonText}>Create Account</Text>
+          <Text style={styles.buttonText}>
+            {loading ? 'Creating Account...' : 'Create Account'}
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.loginContainer}>
