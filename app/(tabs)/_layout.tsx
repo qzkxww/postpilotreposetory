@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Tabs } from 'expo-router';
 import { useColorScheme } from 'react-native';
 import { Chrome as Home, SquareCheck as CheckSquare, Calendar, Settings } from 'lucide-react-native';
@@ -11,7 +10,6 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
-  // Set the tab bar colors based on the theme
   const tabBarStyle = {
     backgroundColor: isDark ? '#121212' : '#ffffff',
     borderTopColor: isDark ? '#333333' : '#f0f0f0',
