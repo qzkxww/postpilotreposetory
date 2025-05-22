@@ -10,9 +10,8 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const systemColorScheme = useColorScheme();
-  const [isDarkMode, setIsDarkMode] = useState(systemColorScheme === 'dark');
+  const [isDarkMode, setIsDarkMode] = useState(false);
   
-  // Update theme when system color scheme changes
   useEffect(() => {
     setIsDarkMode(systemColorScheme === 'dark');
   }, [systemColorScheme]);
