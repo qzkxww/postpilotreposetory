@@ -1,18 +1,20 @@
 import { Tabs } from 'expo-router';
 import { useColorScheme } from 'react-native';
 import { Chrome as Home, SquareCheck as CheckSquare, Calendar, Settings } from 'lucide-react-native';
+import { useFrameworkReady } from '@/hooks/useFrameworkReady';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  useFrameworkReady();
+  const { isDarkMode } = useTheme();
 
   const tabBarStyle = {
-    backgroundColor: isDark ? '#121212' : '#ffffff',
-    borderTopColor: isDark ? '#333333' : '#f0f0f0',
+    backgroundColor: isDarkMode ? '#121212' : '#ffffff',
+    borderTopColor: isDarkMode ? '#333333' : '#f0f0f0',
   };
 
-  const activeColor = isDark ? '#ffffff' : '#000000';
-  const inactiveColor = isDark ? '#777777' : '#888888';
+  const activeColor = isDarkMode ? '#ffffff' : '#000000';
+  const inactiveColor = isDarkMode ? '#777777' : '#888888';
 
   return (
     <Tabs

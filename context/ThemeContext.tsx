@@ -13,7 +13,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   
   useEffect(() => {
-    setIsDarkMode(systemColorScheme === 'dark');
+    if (systemColorScheme) {
+      setIsDarkMode(systemColorScheme === 'dark');
+    }
   }, [systemColorScheme]);
   
   const toggleTheme = () => {
