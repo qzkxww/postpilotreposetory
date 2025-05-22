@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useTheme } from '@/context/ThemeContext';
-import { Mail, Lock } from 'lucide-react-native';
+import { Mail, Lock, Rocket } from 'lucide-react-native';
 import { supabase } from '@/utils/supabase';
 
 export default function LoginScreen() {
@@ -41,10 +41,13 @@ export default function LoginScreen() {
       { backgroundColor: isDarkMode ? '#121212' : '#ffffff' }
     ]}>
       <View style={styles.header}>
-        <Image
-          source={{ uri: 'https://images.pexels.com/photos/7014932/pexels-photo-7014932.jpeg?auto=compress&cs=tinysrgb&w=600' }}
-          style={styles.headerImage}
-        />
+        <View style={styles.logoContainer}>
+          <Rocket
+            size={48}
+            color={isDarkMode ? '#ffffff' : '#000000'}
+            style={styles.logo}
+          />
+        </View>
         <Text style={[
           styles.title,
           { color: isDarkMode ? '#ffffff' : '#000000' }
@@ -135,7 +138,7 @@ export default function LoginScreen() {
           </Text>
           <Link href="/signup" asChild>
             <TouchableOpacity>
-              <Text style={styles.signupText}> Sign Up</Text>
+              <Text style={[styles.signupText, { color: '#ffffff' }]}> Sign Up</Text>
             </TouchableOpacity>
           </Link>
         </View>
@@ -154,11 +157,17 @@ const styles = StyleSheet.create({
     marginTop: 60,
     marginBottom: 40,
   },
-  headerImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+  logoContainer: {
+    width: 80,
+    height: 80,
+    backgroundColor: '#000000',
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 24,
+  },
+  logo: {
+    transform: [{ rotate: '45deg' }],
   },
   title: {
     fontSize: 28,
@@ -215,7 +224,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   signupText: {
-    color: '#000000',
     fontWeight: '600',
   },
 });
