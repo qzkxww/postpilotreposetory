@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useTheme } from '@/context/ThemeContext';
@@ -11,6 +11,13 @@ export default function SignupScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const handleSignup = async () => {
     if (!email || !password || !fullName) {
@@ -19,9 +26,9 @@ export default function SignupScreen() {
     }
 
     try {
+      if (!isMounted.current) return;
       setLoading(true);
 
-      // Sign up the user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -29,8 +36,7 @@ export default function SignupScreen() {
 
       if (authError) throw authError;
 
-      if (authData.user) {
-        // Insert the user's profile data
+      if (authData.user && isMounted.current) {
         const { error: profileError } = await supabase
           .from('users')
           .insert([
@@ -50,9 +56,13 @@ export default function SignupScreen() {
         );
       }
     } catch (error) {
-      Alert.alert('Error', error.message);
+      if (isMounted.current) {
+        Alert.alert('Error', error.message);
+      }
     } finally {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false);
+      }
     }
   };
 

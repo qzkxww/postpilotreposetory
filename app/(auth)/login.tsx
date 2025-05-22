@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Link, router } from 'expo-router';
 import { useTheme } from '@/context/ThemeContext';
@@ -10,6 +10,13 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const isMounted = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -18,7 +25,9 @@ export default function LoginScreen() {
     }
 
     try {
+      if (!isMounted.current) return;
       setLoading(true);
+      
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -26,12 +35,17 @@ export default function LoginScreen() {
 
       if (error) throw error;
 
-      // Navigate to the main app
-      router.replace('/(tabs)');
+      if (isMounted.current) {
+        router.replace('/(tabs)');
+      }
     } catch (error) {
-      Alert.alert('Error', error.message);
+      if (isMounted.current) {
+        Alert.alert('Error', error.message);
+      }
     } finally {
-      setLoading(false);
+      if (isMounted.current) {
+        setLoading(false);
+      }
     }
   };
 
