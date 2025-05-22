@@ -1,12 +1,8 @@
 import { Tabs } from 'expo-router';
 import { useColorScheme } from 'react-native';
 import { Chrome as Home, SquareCheck as CheckSquare, Calendar, Settings } from 'lucide-react-native';
-import { ThemeProvider } from '@/context/ThemeContext';
-import { TaskProvider } from '@/context/TaskContext';
-import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 
 export default function TabLayout() {
-  useFrameworkReady();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -19,58 +15,54 @@ export default function TabLayout() {
   const inactiveColor = isDark ? '#777777' : '#888888';
 
   return (
-    <ThemeProvider>
-      <TaskProvider>
-        <Tabs
-          screenOptions={{
-            tabBarStyle,
-            tabBarActiveTintColor: activeColor,
-            tabBarInactiveTintColor: inactiveColor,
-            tabBarLabelStyle: {
-              fontSize: 12,
-              fontWeight: '500',
-            },
-            headerShown: false,
-          }}
-        >
-          <Tabs.Screen
-            name="index"
-            options={{
-              title: 'Home',
-              tabBarIcon: ({ color, size }) => (
-                <Home size={size} color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="tasks"
-            options={{
-              title: 'Tasks',
-              tabBarIcon: ({ color, size }) => (
-                <CheckSquare size={size} color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="progress"
-            options={{
-              title: 'Progress',
-              tabBarIcon: ({ color, size }) => (
-                <Calendar size={size} color={color} />
-              ),
-            }}
-          />
-          <Tabs.Screen
-            name="settings"
-            options={{
-              title: 'Settings',
-              tabBarIcon: ({ color, size }) => (
-                <Settings size={size} color={color} />
-              ),
-            }}
-          />
-        </Tabs>
-      </TaskProvider>
-    </ThemeProvider>
+    <Tabs
+      screenOptions={{
+        tabBarStyle,
+        tabBarActiveTintColor: activeColor,
+        tabBarInactiveTintColor: inactiveColor,
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '500',
+        },
+        headerShown: false,
+      }}
+    >
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Home',
+          tabBarIcon: ({ color, size }) => (
+            <Home size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="tasks"
+        options={{
+          title: 'Tasks',
+          tabBarIcon: ({ color, size }) => (
+            <CheckSquare size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="progress"
+        options={{
+          title: 'Progress',
+          tabBarIcon: ({ color, size }) => (
+            <Calendar size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color, size }) => (
+            <Settings size={size} color={color} />
+          ),
+        }}
+      />
+    </Tabs>
   );
 }
